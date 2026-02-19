@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Profile</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f6fa;
+      margin: 0;
+      padding: 0;
+    }
+    .profile-container {
+      width: 400px;
+      margin: 50px auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .profile-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #112012;
+    }
+    .profile-details {
+      list-style: none;
+      padding: 0;
+    }
+    .profile-details li {
+      margin: 12px 0;
+      padding: 10px;
+      background: #ecf0f1;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    .label {
+      font-weight: bold;
+      color: #34495e;
+    }
+    .btn {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      padding: 10px;
+      background: #2e7d32;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+    .btn:hover {
+      background: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+  <div class="profile-container">
+    <h2>{{ user.username }}'s Profile</h2>
+    <ul class="profile-details">
+      <li><span class="label">Full Name:</span> {{ user.fullname }}</li>
+      <li><span class="label">Email:</span> {{ user.email }}</li>
+      <li><span class="label">Username:</span> {{ user.username }}</li>
+      <li><span class="label">Phone:</span> {{ user.phone }}</li>
+      <li><span class="label">Date of Birth:</span> {{ user.dob }}</li>
+      <li><span class="label">Address:</span> {{ user.address }}</li>
+      <li><span class="label">Registered On:</span> {{ user.created_at }}</li>
+    </ul>
+    <a href="{{ url_for('logout') }}" class="btn">Logout</a>
+  </div>
+</body>
+</html>

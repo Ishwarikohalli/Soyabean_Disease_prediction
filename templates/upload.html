@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Soybean Disease Detection - AgroAI</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f1f8f5;
+      margin: 0;
+      padding: 20px;
+      color: #2e7d32;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1000px;
+      background: #fff;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    h2, h3 {
+      text-align: center;
+      color: #1b5e20;
+    }
+
+    video, img {
+      width: 100%;
+      max-width: 350px;
+      border-radius: 12px;
+      border: 2px solid #ccc;
+    }
+
+    .button {
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .button:hover {
+      background-color: #1b5e20;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .input-box {
+      background: #e8f5e9;
+      padding: 15px;
+      border-radius: 10px;
+    }
+
+    .input-box label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .input-box input, .input-box textarea, .input-box select {
+      width: 100%;
+      padding: 10px;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    .level {
+      padding: 10px;
+      border-radius: 6px;
+      margin: 6px 0;
+      font-weight: bold;
+    }
+
+    .low { background-color: #e8f5e9; border-left: 8px solid #43a047; }
+    .medium { background-color: #fffde7; border-left: 8px solid #fbc02d; }
+    .high { background-color: #ffebee; border-left: 8px solid #e53935; }
+
+    canvas {
+      max-width: 100%;
+      margin-top: 20px;
+    }
+
+    /* NEW: Grayscale Preview */
+    .grayscale {
+      filter: grayscale(100%);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🌿 Soybean Disease Detection & AI Recommendations</h2>
+
+    <div class="grid">
+      <!-- Webcam Section -->
+      <div>
+        <h3>📷 Capture via Webcam</h3>
+        <video id="video" autoplay></video><br>
+        <button class="button" onclick="capture()">📸 Capture</button>
+        <canvas id="canvas" width="350" height="280" style="display:none;"></canvas>
+        <br><br>
+        <img id="capturedImage" style="display:none;" class="grayscale">
+      </div>
+
+      <!-- Reference Image -->
+      <div>
+        <h3>🖼️ Sample Leaf (Reference)</h3>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Soybean_rust_leaf_with_spores.JPG/640px-Soybean_rust_leaf_with_spores.JPG" alt="Sample Soybean Leaf">
+      </div>
+    </div>
+
+    <!-- Prediction & Recommendation -->
+    <div class="grid">
+      <div class="input-box">
+        <label>🧪 Predicted Disease</label>
+        <input type="text" id="predictedDisease" placeholder="e.g., Rust, Mosaic Virus...">
+
+        <label>📊 Risk Level</label>
+        <select id="riskLevel" onchange="updateChart()">
+          <option value="">-- Select Risk Level --</option>
+          <option value="Low">🟢 Low</option>
+          <option value="Medium">🟡 Medium</option>
+          <option value="High">🔴 High</option>
+        </select>
+      </div>
+
+      <div class="input-box">
+        <label>🤖 AI Recommendation</label>
+        <textarea id="recommendation" rows="5" placeholder="e.g., Apply fungicide, increase spacing..."></textarea>
+      </div>
+    </div>
+
+    <!-- Risk Chart -->
+    <div>
+      <h3>📈 Disease Risk Distribution</h3>
+      <canvas id="riskChart"></canvas>
+    </div>
+
+    <!-- Legend -->
+    <div class="input-box">
+      <h3>🧬 Risk Level Meaning</h3>
+      <div class="level low">🟢 Low: Minor spotting, self-recoverable</div>
+      <div class="level medium">🟡 Medium: Treatable, apply protection measures</div>
+      <div class="level high">🔴 High: Critical condition, crop loss risk</div>
+    </div>
+  </div>
+
+  <script>
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const context = canvas.getContext("2d");
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => {
+        alert("Webcam error: " + err);
+      });
+
+    function capture() {
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      const dataURL = canvas.toDataURL("image/png");
+
+      const img = document.getElementById("capturedImage");
+      img.src = dataURL;
+      img.style.display = "block";   // Show image
+      img.classList.add("grayscale"); // Apply grayscale filter
+
+      alert("📸 Leaf captured in Grayscale!");
+    }
+
+    // Chart setup
+    const ctx = document.getElementById('riskChart');
+    const chartData = {
+      labels: ['Low', 'Medium', 'High'],
+      datasets: [{
+        label: 'Detected Risk Cases',
+        data: [1, 1, 1],
+        backgroundColor: ['#66bb6a', '#fbc02d', '#ef5350']
+      }]
+    };
+
+    const riskChart = new Chart(ctx, {
+      type: 'bar',
+      data: chartData,
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          title: {
+            display: true,
+            text: 'Current Disease Risk Summary'
+          }
+        }
+      }
+    });
+
+    function updateChart() {
+      const risk = document.getElementById("riskLevel").value;
+      if (risk === "") return;
+
+      const index = { "Low": 0, "Medium": 1, "High": 2 }[risk];
+      chartData.datasets[0].data[index] += 1;
+      riskChart.update();
+    }
+  </script>
+</body>
+</html>

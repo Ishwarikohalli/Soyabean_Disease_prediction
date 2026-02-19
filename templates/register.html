@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register - AgroAI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: url("{{ url_for('static', filename='images/image.png') }}") no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .register-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 35px 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            text-align: center;
+        }
+
+        .register-container h2 {
+            margin-bottom: 20px;
+            color: #2e7d32;
+        }
+
+        .register-container input[type="text"],
+        .register-container input[type="password"],
+        .register-container input[type="email"],
+        .register-container input[type="number"] {
+            width: 100%;
+            padding: 10px 14px;
+            margin: 8px 0 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .register-container input:focus {
+            border-color: #4caf50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+        }
+
+        .register-container button {
+            width: 100%;
+            background-color: #4caf50;
+            color: white;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        .register-container button:hover {
+            background-color: #388e3c;
+        }
+
+        .register-container p {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .register-container a {
+            color: #2e7d32;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .flash-message {
+            color: red;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        label {
+            float: left;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #444;
+        }
+    </style>
+</head>
+<body>
+
+<div class="register-container">
+    <h2>AgroAI Farmer Registration</h2>
+    <form method="POST">
+        <label for="fullname">Full Name</label>
+        <input type="text" name="fullname" placeholder="Your full name" required>
+
+        <label for="username">Username</label>
+        <input type="text" name="username" placeholder="Choose a username" required>
+
+        <label for="password">Password</label>
+        <input type="password" name="password" placeholder="Create a password" required>
+
+        <label for="email">Email Address</label>
+        <input type="email" name="email" placeholder="you@example.com" required>
+
+        <label for="mobile">Mobile Number</label>
+        <input type="text" name="mobile" placeholder="10-digit mobile number" pattern="\d{10}" required>
+
+        <label for="location">Village / City</label>
+        <input type="text" name="location" placeholder="Your location" required>
+
+        <label for="land">Land Size (in acres)</label>
+        <input type="number" name="land" placeholder="e.g., 5.5" step="0.1" required>
+
+        <button type="submit">Register</button>
+    </form>
+    <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <p class="flash-message">{{ message }}</p>
+      {% endfor %}
+    {% endwith %}
+</div>
+
+</body>
+</html>

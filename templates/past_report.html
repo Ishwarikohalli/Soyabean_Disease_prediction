@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ username }}Past Reports</title>
+  <style>
+    :root{
+  --bg:#f4fff6;              /* very light green background */
+  --panel:#ffffff;           /* white cards */
+  --panel-2:#e8f5e9;         /* light green shade */
+  --text:#1b5e20;            /* dark green text */
+  --muted:#4caf50;           /* medium green */
+  --accent:#2e7d32;          /* primary green */
+  --accent-2:#66bb6a;        /* light green button */
+  --danger:#0b0b0b;          /* red stays same */
+  --shadow: 0 8px 20px rgba(0,128,0,.15);
+  --radius: 16px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+    
+  margin:0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  background: linear-gradient(to bottom right, #e8f5e9, #ffffff);
+  color:var(--text);
+  min-height:100dvh;
+}
+
+
+    .container{
+      max-width:1100px; margin:40px auto; padding:0 16px;
+    }
+
+    .card{
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border:1px solid rgba(255,255,255,.06);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      
+    }
+
+    .card-header{
+      padding:20px 24px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;
+    }
+    .title{
+      margin:0; font-size:1.25rem; letter-spacing:.2px;
+    }
+    .subtitle{
+      margin:4px 0 0; color:var(--muted); font-weight:500; font-size:.95rem;
+    }
+    .header-actions{display:flex; gap:10px; align-items:center; margin-left:auto;}
+    .btn{
+      appearance:none; border:none; cursor:pointer; border-radius:10px; padding:10px 14px; font-weight:600;
+      color:#021016; background: var(--accent);
+      transition: transform .08s ease, box-shadow .2s ease, opacity .2s ease;
+      box-shadow: 0 6px 16px rgba(34,211,238,.25);
+      text-decoration:none; display:inline-flex; align-items:center; gap:8px;
+    }
+    .btn.secondary{
+      background: transparent; color: var(--text); border:1px solid rgba(255,255,255,.12);
+      box-shadow:none;
+    }
+    .btn:hover{ transform: translateY(-1px); }
+    .btn:active{ transform: translateY(0); }
+
+    .search{
+      flex:1 1 280px; min-width:220px; position:relative;
+    }
+    .search input{
+      width:100%; background: #fefefe; color:var(--text);
+      border:1px solid rgba(13, 13, 13, 0.79);
+      border-radius:10px; padding:10px 40px 10px 40px; outline:none;
+    }
+    .search .icon{
+      position:absolute; left:12px; top:50%; transform:translateY(-50%); opacity:.7;
+      font-size:14px;
+    }
+    .search .clear{
+      position:absolute; right:10px; top:50%; transform:translateY(-50%);
+      background:transparent; border:none; color:var(--muted); font-size:18px; cursor:pointer; padding:4px;
+    }
+
+    .table-wrap{ width:100%; overflow:auto; }
+    table{
+      width:100%; border-collapse:collapse; min-width:720px;
+    }
+    thead th{
+      text-align:left; font-size:.85rem; letter-spacing:.4px; color:var(--muted); font-weight:700;
+      padding:14px 14px; background:rgba(255,255,255,.02); position:sticky; top:0; backdrop-filter: blur(6px);
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    tbody td{
+      padding:14px; border-bottom:1px solid rgba(255,255,255,.06); vertical-align:middle;
+    }
+    tbody tr:hover{ background: rgba(255,255,255,.02); }
+
+    .thumb{
+      display:flex; align-items:center; gap:12px;
+    }
+    .thumb img{
+      width:64px; height:64px; object-fit:cover; border-radius:12px; border:1px solid rgba(255,255,255,.08);
+    }
+    .filename{ color:var(--text); font-weight:600; font-size:.95rem; }
+    .muted{ color:var(--muted); font-size:.85rem; }
+
+    .badge{
+      display:inline-block; padding:6px 10px; border-radius:999px; font-size:.85rem; font-weight:700;
+      background: rgba(16,185,129,.12); color:#a7f3d0; border:1px solid rgba(16,185,129,.25);
+    }
+    .badge.warn{ background: rgba(233, 116, 116, 0.12); color:#fecaca; border-color: rgba(6, 6, 6, 0.18); }
+    .badge.info{ background: rgba(34,211,238,.12); color:#bae6fd; border-color: rgba(34,211,238,.25); }
+
+    .empty{
+      text-align:center; padding:48px 24px; color:var(--muted);
+    }
+    .footer{
+      display:flex; justify-content:space-between; align-items:center; gap:12px;
+      padding:16px 24px; color:var(--muted); font-size:.9rem; border-top:1px solid rgba(255,255,255,.06);
+      background: rgba(255,255,255,.02);
+    }
+
+    @media (max-width:640px){
+      .title{ font-size:1.1rem; }
+      .card-header{ gap:8px; }
+      .btn{ padding:9px 12px; }
+      .search input{ padding:9px 36px 9px 36px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <h1 class="title">{{ username }}'s Past Reports</h1>
+          <p class="subtitle">Browse your previous image predictions. Use the search box to filter by filename, prediction, or date.</p>
+        </div>
+
+        <div class="header-actions" style="flex-wrap:wrap;">
+          <div class="search">
+            <span class="icon">🔎</span>
+            <input id="searchInput" type="text" placeholder="Search reports..." oninput="filterTable()" />
+            <button class="clear" title="Clear" onclick="clearSearch()">×</button>
+          </div>
+          <a class="btn secondary" href="{{ url_for('dashboard') }}">← Back to Dashboard</a>
+        </div>
+      </div>
+
+      {% if reports and reports|length > 0 %}
+      <div class="table-wrap">
+        <table id="reportsTable">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Prediction</th>
+              <th>Timestamp</th>
+              {% if reports[0].get('confidence') %}<th>Confidence</th>{% endif %}
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in reports %}
+            <tr>
+              <td>
+                <div class="thumb">
+                  {# If you saved only the filename, build the static path; adjust if you saved full path #}
+                  <a href="{{ url_for('static', filename='uploads/' ~ r.image) }}" target="_blank" title="Open full image">
+                    <img src="{{ url_for('static', filename='uploads/' ~ r.image) }}" alt="{{ r.image }}">
+                  </a>
+                  <div>
+                    <div class="filename">{{ r.image }}</div>
+                    <div class="muted">Stored in uploads</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                {# Optional badges: mark “Healthy” as green, others as warning; adjust labels as needed #}
+                {% set label = (r.prediction or 'Unknown') %}
+                <span class="badge {% if label|lower != 'healthy' %}warn{% else %}{% endif %}">
+                  {{ label }}
+                </span>
+              </td>
+              <td class="muted">{{ r.timestamp }}</td>
+              {% if r.get('confidence') %}
+                <td>{{ '%.2f'|format(r.confidence) }}</td>
+              {% endif %}
+              <td>
+                <!-- replace URLs with real endpoints if you add delete/download later -->
+                <a class="btn" style="background:var(--accent-2); box-shadow:0 6px 16px rgba(16,185,129,.25)"
+                   href="{{ url_for('static', filename='uploads/' ~ r.image) }}" download>
+                  ⬇ Download
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="footer">
+        <div>Total reports: <strong>{{ reports|length }}</strong></div>
+        <div>Tip: Click an image to view it full-size in a new tab.</div>
+      </div>
+      {% else %}
+      <div class="empty">
+        <p>No reports yet.</p>
+        <p>Upload an image to generate your first prediction.</p>
+        <div style="margin-top:16px;">
+          <a class="btn" href="{{ url_for('upload_img') }}">Upload Image</a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <script>
+    function filterTable(){
+      const q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+      const rows = document.querySelectorAll('#reportsTable tbody tr');
+      rows.forEach(tr => {
+        const text = tr.innerText.toLowerCase();
+        tr.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+    function clearSearch(){
+      const i = document.getElementById('searchInput');
+      i.value = '';
+      i.focus();
+      filterTable();
+    }
+  </script>
+</body>
+</html>

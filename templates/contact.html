@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Contact & Feedback</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      width: 80%;
+      max-width: 900px;
+      margin: 40px auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .card {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .contact-info p {
+      margin: 10px 0;
+      font-size: 16px;
+    }
+    a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    form label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+    form input, form textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+    form textarea {
+      resize: none;
+      height: 100px;
+    }
+    .btn {
+      margin-top: 15px;
+      padding: 12px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+    }
+    .btn:hover {
+      background: #218838;
+    }
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Contact Section -->
+    <div class="card">
+      <h2>Contact Us</h2>
+      <div class="contact-info">
+        <p><b>Email:</b> support@soyabeanai.com</p>
+        <p><b>Phone:</b> +91 98765 43210</p>
+        <p><b>Address:</b> Pune, Maharashtra, India</p>
+      </div>
+    </div>
+
+    <!-- Feedback Section -->
+    <div class="card">
+      <h2>Feedback</h2>
+      <form action="{{ url_for('contact') }}" method="POST">
+        <label for="name">Your Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="email">Your Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="message">Your Feedback:</label>
+        <textarea id="message" name="message" required></textarea>
+
+        <button type="submit" class="btn">Submit Feedback</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

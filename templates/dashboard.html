@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AgroAI Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family: 'Quicksand', sans-serif; }
+    body { background: #fff8f0; color: #333; }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: fixed;
+      left: 0; top: 0;
+      width: 220px; height: 100vh;
+      background: linear-gradient(180deg, #2e7d32, #66bb6a);
+      padding-top: 40px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .sidebar h2 { color: #fff; text-align: center; margin-bottom: 25px; font-size: 2em; letter-spacing: 1px; }
+    .sidebar a {
+      padding: 12px 20px; color: #fff; text-decoration: none;
+      border-radius: 12px; font-weight: 500; display: flex; align-items: center; gap: 10px;
+      transition: 0.3s; background: rgba(255,255,255,0.05);
+    }
+    .sidebar a:hover { background: rgba(255,255,255,0.2); color: #fff; transform: scale(1.05); }
+
+    /* MAIN CONTENT */
+    .main { margin-left: 220px; padding: 40px 30px 30px 30px; }
+
+    /* HEADER */
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; flex-wrap: wrap; }
+    .header h1 { color: #2e7d32; font-size: 2em; font-weight: 700; }
+    .header .user { font-weight: 500; color: #388e3c }
+
+    /* KPI CARDS */
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; margin-bottom: 40px; }
+    .card {
+      background: linear-gradient(135deg, #cdefb0, #cdefb0);
+      border-radius: 20px; padding: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      text-align: center; transition: 0.3s; position: relative; overflow: hidden;
+    }
+    .card::before {
+      content: ""; position: absolute; top:0; left:0; width:100%; height:100%;
+      background: rgba(255,255,255,0.2); transform: translateX(-100%) skewX(-20deg);
+      transition: 0.5s;
+    }
+    .card:hover::before { transform: translateX(200%) skewX(-20deg); }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+    .card h3 { color: #2e7d32; margin-bottom: 12px; font-size: 1.2em; }
+    .card p { font-size: 1em; font-weight: 500; }
+
+    /* GRID FOR CHART & TIPS */
+    .grid-two { display: grid; grid-template-columns: 2fr 1fr; gap: 25px; margin-bottom: 30px; }
+    .chart-card, .tips-card {
+      background: linear-gradient(135deg, #f1f8f5, #e8f5e9);
+      border-radius: 20px; padding: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .chart-card h3, .tips-card h3 { color: #2e7d32; margin-bottom: 20px; font-size: 1.3em; }
+
+    /* TIPS */
+    .tips-card .tip {
+      padding: 12px 15px; background: #79eb7f; border-left: 6px solid #43a047;
+      border-radius: 10px; margin-bottom: 12px; color: #2e7d32; font-weight: 500; font-size: 1em;
+      transition: 0.3s;
+    }
+    .tips-card .tip:hover { background: #97e89b; transform: translateX(5px); }
+
+    /* FOOTER */
+    footer { background: #27852c; color: #b8f1ba; text-align: center; padding: 14px; border-radius: 12px; font-size: 14px; margin-top: 20px; }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .main { margin-left: 0; padding-top: 20px; }
+      .sidebar { width: 100%; height: auto; flex-direction: row; overflow-x: auto; padding-top:10px;}
+      .sidebar a { flex: 1; margin: 5px 2px; text-align:center; }
+      .grid-two { grid-template-columns: 1fr; }
+    }
+
+    /* CARD ICONS */
+    .card img { max-width: 50px; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>🌾 AgroAI</h2>
+    <a href="{{ url_for('dashboard') }}">🏠 Dashboard</a>
+    <a href="{{ url_for('upload_img') }}">📤 Upload</a>
+    <a href="{{ url_for('past_report') }}">📄 Reports</a>
+    <a href="{{ url_for('profile') }}">👤 Profile</a>
+    <a href="{{ url_for('contact') }}">📞 Contact</a>
+    <a href="{{ url_for('logout') }}">🚪 Logout</a>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+    <div class="header">
+      <h1>Dashboard</h1>
+      <div class="user">Welcome, {{ farmer_name }} 👨‍🌾 | 📅 {{ current_date }}</div>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="cards">
+      <div class="card">
+        <img src="https://user-images.githubusercontent.com/30645315/68544440-37ffdd80-03e9-11ea-8acd-3f3f9b6fc8b3.png" alt="disease icon">
+        <h3>Diseases Detected</h3>
+        <p>5 this week</p>
+      </div>
+      <div class="card">
+        <img src="https://www.iconpacks.net/icons/2/free-search-icon-2911-thumb.png" alt="prediction icon">
+        <h3>Last Prediction</h3>
+        <p>{{ last_prediction }}</p>
+      </div>
+      <div class="card">
+        <img src="https://uxwing.com/wp-content/themes/uxwing/download/weather/weather-icon.png" alt="weather icon">
+        <h3>Weather Advisory</h3>
+        <p><span id="weather-info">Loading...</span></p>
+      </div>
+    </div>
+
+    <!-- CHART & TIPS -->
+    <div class="grid-two">
+      <div class="chart-card">
+        <h3>📊 Weekly Disease Trend</h3>
+        <canvas id="diseaseChart"></canvas>
+      </div>
+      <div class="tips-card">
+        <h3>🌱 Tips & Alerts</h3>
+        <div class="tip">Rotate crops to prevent soil depletion.</div>
+        <div class="tip">High humidity may cause fungal disease.</div>
+        <div class="tip">Govt announces subsidy for organic fertilizers.</div>
+        <div class="tip">Check leaves regularly for early detection.</div>
+      </div>
+    </div>
+
+    <footer>
+      📞 +91-9876543210 | 📩 support@agroai.com | © 2025 AgroAI. All Rights Reserved.
+    </footer>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script>
+    // WEATHER SECTION
+    const WEATHER_API_KEY = "c09e858a14f4a2b8a0cb23aff9239d03";
+    const CITY_NAME = "{{ city_name }}";
+
+    async function fetchWeather() {
+      try {
+        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${CITY_NAME}&appid=${WEATHER_API_KEY}&units=metric`);
+        const data = await response.json();
+        if (data.cod === 200) {
+          const temp = data.main.temp.toFixed(1);
+          const desc = data.weather[0].description;
+          const humidity = data.main.humidity;
+          document.getElementById("weather-info").innerText = `${desc}, ${temp}°C, Humidity: ${humidity}%`;
+        } else {
+          document.getElementById("weather-info").innerText = "City not found";
+        }
+      } catch (error) {
+        document.getElementById("weather-info").innerText = "Error fetching weather";
+        console.error(error);
+      }
+    }
+    fetchWeather();
+    setInterval(fetchWeather, 60000);
+
+    // DISEASE TREND CHART
+    const ctx = document.getElementById('diseaseChart').getContext('2d');
+    let diseaseChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Diseases Detected',
+          data: [],
+          backgroundColor: '#4caf50',
+          borderColor: '#4caf50',
+          borderWidth: 3,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 5,
+          pointBackgroundColor: '#4caf50'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#333', font: { size:14 } } } },
+        scales: {
+          x: { ticks: { color: '#333', font: { size:14 } }, grid: { color: '#79eb7f' } },
+          y: { ticks: { color: '#333', font: { size:14 } }, grid: { color: '#79eb7f' } }
+        }
+      }
+    });
+
+    async function fetchWeeklyTrends() {
+      const response = await fetch('/api/weekly_trends');
+      const result = await response.json();
+      if (!result.error) {
+        diseaseChart.data.labels = result.labels;
+        diseaseChart.data.datasets[0].data = result.data;
+        diseaseChart.update();
+      }
+    }
+    fetchWeeklyTrends();
+    setInterval(fetchWeeklyTrends, 30000);
+  </script>
+</body>
+</html>

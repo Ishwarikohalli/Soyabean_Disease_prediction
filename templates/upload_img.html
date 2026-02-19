@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Leaf Image</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #e8f5e9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .upload-container {
+            background-color: white;
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h2 {
+            margin-bottom: 25px;
+            color: #2e7d32;
+        }
+
+        input[type="file"] {
+            display: block;
+            margin: 15px auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #388e3c;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2e7d32;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            color: #1976d2;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <h2>Upload a Leaf Image for Disease Prediction</h2>
+        <form method="POST" enctype="multipart/form-data">
+            <input type="file" name="image" accept="image/*" required>
+            <button type="submit">Predict</button>
+        </form>
+        <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+    </div>
+</body>
+</html>
